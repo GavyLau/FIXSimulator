@@ -43,14 +43,13 @@ import quickfix.field.ExecID;
 import quickfix.field.ExecRefID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
-import quickfix.field.IDSource;
 import quickfix.field.IOINaturalFlag;
+import quickfix.field.IOIQty;
 import quickfix.field.IOIRefID;
-import quickfix.field.IOIShares;
 import quickfix.field.IOITransType;
 import quickfix.field.IOIid;
 import quickfix.field.LastPx;
-import quickfix.field.LastShares;
+import quickfix.field.LastQty;
 import quickfix.field.LeavesQty;
 import quickfix.field.OnBehalfOfCompID;
 import quickfix.field.OnBehalfOfSubID;
@@ -61,10 +60,11 @@ import quickfix.field.OrigClOrdID;
 import quickfix.field.Price;
 import quickfix.field.SecurityDesc;
 import quickfix.field.SecurityID;
+import quickfix.field.SecurityIDSource;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.ValidUntilTime;
-import quickfix.fix42.Message.Header;
+import quickfix.fix44.Message.Header;
 
 public class FIXimulatorApplication extends MessageCracker implements Application {
 	private boolean connected;
@@ -94,9 +94,11 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		executions = new ExecutionSet();
 	}
 
+	@Override
 	public void onCreate(SessionID sessionID) {
 	}
 
+	@Override
 	public void onLogon(SessionID sessionID) {
 		connected = true;
 		currentSession = sessionID;
@@ -106,6 +108,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 					getClass().getResource("/edu/harvard/fas/zfeledy/fiximulator/ui/green.gif")));
 	}
 
+	@Override
 	public void onLogout(SessionID sessionID) {
 		connected = false;
 		currentSession = null;
@@ -113,15 +116,9 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 				new javax.swing.ImageIcon(getClass().getResource("/edu/harvard/fas/zfeledy/fiximulator/ui/red.gif")));
 	}
 
-	// IndicationofInterest handling
-	@Override
-	public void onMessage(quickfix.fix42.IndicationofInterest message, SessionID sessionID)
-			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
-	}
-
 	// NewOrderSingle handling
 	@Override
-	public void onMessage(quickfix.fix42.NewOrderSingle message, SessionID sessionID)
+	public void onMessage(quickfix.fix44.NewOrderSingle message, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 		Order order = new Order(message);
 		order.setReceivedOrder(true);
@@ -143,7 +140,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 
 	// OrderCancelRequest handling
 	@Override
-	public void onMessage(quickfix.fix42.OrderCancelRequest message, SessionID sessionID)
+	public void onMessage(quickfix.fix44.OrderCancelRequest message, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 		Order order = new Order(message);
 		order.setReceivedCancel(true);
@@ -165,7 +162,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 
 	// OrderReplaceRequest handling
 	@Override
-	public void onMessage(quickfix.fix42.OrderCancelReplaceRequest message, SessionID sessionID)
+	public void onMessage(quickfix.fix44.OrderCancelReplaceRequest message, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 		Order order = new Order(message);
 		order.setReceivedReplace(true);
@@ -187,18 +184,18 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 
 	// OrderCancelReject handling
 	@Override
-	public void onMessage(quickfix.fix42.OrderCancelReject message, SessionID sessionID)
+	public void onMessage(quickfix.fix44.OrderCancelReject message, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 	}
 
 	// ExecutionReport handling
 	@Override
-	public void onMessage(quickfix.fix42.ExecutionReport message, SessionID sessionID)
+	public void onMessage(quickfix.fix44.ExecutionReport message, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 	}
 
 	@Override
-	public void onMessage(quickfix.fix42.DontKnowTrade message, SessionID sessionID)
+	public void onMessage(quickfix.fix44.DontKnowTrade message, SessionID sessionID)
 			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
 
 		try {
@@ -211,12 +208,14 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		}
 	}
 
+	@Override
 	public void fromApp(Message message, SessionID sessionID)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
 		messages.add(message, true, dictionary, sessionID);
 		crack(message, sessionID);
 	}
 
+	@Override
 	public void toApp(Message message, SessionID sessionID) throws DoNotSend {
 		try {
 			messages.add(message, false, dictionary, sessionID);
@@ -226,10 +225,12 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		}
 	}
 
+	@Override
 	public void fromAdmin(Message message, SessionID sessionID)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon {
 	}
 
+	@Override
 	public void toAdmin(Message message, SessionID sessionID) {
 	}
 
@@ -354,7 +355,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		}
 
 		// Construct OrderCancelReject message from required fields
-		quickfix.fix42.OrderCancelReject rejectMessage = new quickfix.fix42.OrderCancelReject(orderID, clientID,
+		quickfix.fix44.OrderCancelReject rejectMessage = new quickfix.fix44.OrderCancelReject(orderID, clientID,
 				origClientID, ordStatus, responseTo);
 
 		// *** Send message ***
@@ -544,14 +545,14 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 			side = new Side(Side.UNDISCLOSED);
 
 		// IOIShares
-		IOIShares shares = new IOIShares(ioi.getQuantity().toString());
+		IOIQty shares = new IOIQty(ioi.getQuantity().toString());
 
 		// Symbol
 		Symbol symbol = new Symbol(ioi.getSymbol());
 
 		// Construct IOI from required fields
-		quickfix.fix42.IndicationofInterest fixIOI = new quickfix.fix42.IndicationofInterest(ioiID, ioiType, symbol,
-				side, shares);
+		quickfix.fix44.IndicationOfInterest fixIOI = new quickfix.fix44.IndicationOfInterest(ioiID, ioiType, side,
+				shares);
 
 		// *** Conditionally required fields ***
 		// IOIRefID
@@ -567,17 +568,17 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		fixIOI.set(securityID);
 
 		// IDSource
-		IDSource idSource = null;
+		SecurityIDSource idSource = null;
 		if (ioi.getIDSource().equals("TICKER"))
-			idSource = new IDSource(IDSource.EXCHANGE_SYMBOL);
+			idSource = new SecurityIDSource(SecurityIDSource.EXCHANGE_SYMBOL);
 		if (ioi.getIDSource().equals("RIC"))
-			idSource = new IDSource(IDSource.RIC_CODE);
+			idSource = new SecurityIDSource(SecurityIDSource.RIC_CODE);
 		if (ioi.getIDSource().equals("SEDOL"))
-			idSource = new IDSource(IDSource.SEDOL);
+			idSource = new SecurityIDSource(SecurityIDSource.SEDOL);
 		if (ioi.getIDSource().equals("CUSIP"))
-			idSource = new IDSource(IDSource.CUSIP);
+			idSource = new SecurityIDSource(SecurityIDSource.CUSIP);
 		if (ioi.getIDSource().equals("UNKOWN"))
-			idSource = new IDSource("100");
+			idSource = new SecurityIDSource("100");
 		fixIOI.set(idSource);
 
 		// Price
@@ -651,8 +652,8 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		AvgPx avgPx = new AvgPx(execution.getAvgPx());
 
 		// Construct Execution Report from required fields
-		quickfix.fix42.ExecutionReport executionReport = new quickfix.fix42.ExecutionReport(orderID, execID,
-				execTransType, execType, ordStatus, symbol, side, leavesQty, cumQty, avgPx);
+		quickfix.fix44.ExecutionReport executionReport = new quickfix.fix44.ExecutionReport(orderID, execID, execType,
+				ordStatus, side, leavesQty, cumQty, avgPx);
 
 		// *** Conditional fields ***
 		if (execution.getRefID() != null) {
@@ -662,14 +663,14 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		// *** Optional fields ***
 		executionReport.set(new ClOrdID(execution.getOrder().getClientID()));
 		executionReport.set(new OrderQty(execution.getOrder().getQuantity()));
-		executionReport.set(new LastShares(execution.getLastShares()));
+		executionReport.set(new LastQty(execution.getLastShares()));
 		executionReport.set(new LastPx(execution.getLastPx()));
 		System.out.println("Setting...");
 		System.out.println("SecurityID: " + order.getSecurityID());
 		System.out.println("IDSource: " + order.getIdSource());
 		if (order.getSecurityID() != null && order.getIdSource() != null) {
 			executionReport.set(new SecurityID(order.getSecurityID()));
-			executionReport.set(new IDSource(order.getIdSource()));
+			executionReport.set(new SecurityIDSource(order.getIdSource()));
 		}
 
 		// *** Send message ***
@@ -748,6 +749,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 			securityIDvalue = identifier;
 		}
 
+		@Override
 		public void run() {
 			while (connected && ioiSenderStarted) {
 				sendRandomIOI();
@@ -883,6 +885,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 			this.delay = delay;
 		}
 
+		@Override
 		public void run() {
 			while (connected && executorStarted) {
 				while (orders.haveOrdersToFill()) {

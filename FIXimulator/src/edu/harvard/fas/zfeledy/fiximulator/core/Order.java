@@ -12,13 +12,13 @@ package edu.harvard.fas.zfeledy.fiximulator.core;
 
 import quickfix.FieldNotFound;
 import quickfix.field.ClOrdID;
-import quickfix.field.IDSource;
 import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Price;
 import quickfix.field.SecurityID;
+import quickfix.field.SecurityIDSource;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
@@ -61,7 +61,7 @@ public class Order implements Cloneable {
 		ID = generateID();
 	}
 
-	public Order(quickfix.fix42.NewOrderSingle message) {
+	public Order(quickfix.fix44.NewOrderSingle message) {
 		ID = generateID();
 
 		// ClOrdID
@@ -131,7 +131,7 @@ public class Order implements Cloneable {
 
 		// IDSource
 		try {
-			IDSource idSrc = new IDSource();
+			SecurityIDSource idSrc = new SecurityIDSource();
 			message.get(idSrc);
 			this.setIdSource(idSrc.getValue());
 		} catch (FieldNotFound ex) {
@@ -141,7 +141,7 @@ public class Order implements Cloneable {
 		System.out.println("IDSource: " + this.getIdSource());
 	}
 
-	public Order(quickfix.fix42.OrderCancelRequest message) {
+	public Order(quickfix.fix44.OrderCancelRequest message) {
 		// ID = generateID();
 
 		try {
@@ -211,14 +211,14 @@ public class Order implements Cloneable {
 
 		// IDSource
 		try {
-			IDSource idSrc = new IDSource();
+			SecurityIDSource idSrc = new SecurityIDSource();
 			message.get(idSrc);
 			this.setIdSource(idSrc.getValue());
 		} catch (FieldNotFound ex) {
 		}
 	}
 
-	public Order(quickfix.fix42.OrderCancelReplaceRequest message) {
+	public Order(quickfix.fix44.OrderCancelReplaceRequest message) {
 		ID = generateID();
 
 		// ClOrdID
@@ -304,7 +304,7 @@ public class Order implements Cloneable {
 
 		// IDSource
 		try {
-			IDSource idSrc = new IDSource();
+			SecurityIDSource idSrc = new SecurityIDSource();
 			message.get(idSrc);
 			this.setIdSource(idSrc.getValue());
 		} catch (FieldNotFound ex) {
