@@ -116,6 +116,12 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 				new javax.swing.ImageIcon(getClass().getResource("/edu/harvard/fas/zfeledy/fiximulator/ui/red.gif")));
 	}
 
+	// IndicationofInterest handling
+	@Override
+	public void onMessage(quickfix.fix44.IndicationOfInterest message, SessionID sessionID)
+			throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {
+	}
+
 	// NewOrderSingle handling
 	@Override
 	public void onMessage(quickfix.fix44.NewOrderSingle message, SessionID sessionID)
