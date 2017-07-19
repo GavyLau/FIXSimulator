@@ -559,6 +559,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		// Construct IOI from required fields
 		quickfix.fix44.IndicationOfInterest fixIOI = new quickfix.fix44.IndicationOfInterest(ioiID, ioiType, side,
 				shares);
+		fixIOI.set(symbol);
 
 		// *** Conditionally required fields ***
 		// IOIRefID
@@ -634,7 +635,8 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		ExecID execID = new ExecID(execution.getID());
 
 		// ExecTransType (20)
-		ExecTransType execTransType = new ExecTransType(execution.getFIXExecTranType());
+		// ExecTransType execTransType = new
+		// ExecTransType(execution.getFIXExecTranType());
 
 		// ExecType (150) Status of this report
 		ExecType execType = new ExecType(execution.getFIXExecType());
@@ -660,6 +662,7 @@ public class FIXimulatorApplication extends MessageCracker implements Applicatio
 		// Construct Execution Report from required fields
 		quickfix.fix44.ExecutionReport executionReport = new quickfix.fix44.ExecutionReport(orderID, execID, execType,
 				ordStatus, side, leavesQty, cumQty, avgPx);
+		executionReport.set(symbol);
 
 		// *** Conditional fields ***
 		if (execution.getRefID() != null) {
