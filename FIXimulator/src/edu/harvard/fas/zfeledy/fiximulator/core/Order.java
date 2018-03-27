@@ -2,10 +2,10 @@
  * File : Order.java
  *
  * Author : Zoltan Feledy
- * 
+ *
  * Contents : This class is a basic Order object that is used to create and
  * store order details.
- * 
+ *
  */
 
 package edu.harvard.fas.zfeledy.fiximulator.core;
@@ -219,7 +219,13 @@ public class Order implements Cloneable {
 	}
 
 	public Order(quickfix.fix44.OrderCancelReplaceRequest message) {
-		ID = generateID();
+		// ID = generateID();
+		try {
+			OrderID orderID = new OrderID();
+			message.get(orderID);
+			this.setID(orderID.getValue().toString());
+		} catch (FieldNotFound ex) {
+		}
 
 		// ClOrdID
 		try {
